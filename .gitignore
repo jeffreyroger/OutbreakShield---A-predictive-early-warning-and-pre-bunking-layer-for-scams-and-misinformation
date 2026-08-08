@@ -1,0 +1,28 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Data & models (CON-4, size)
+data/corpus/*
+!data/corpus/.gitkeep
+data/*.db
+data/*.db-wal
+data/*.db-shm
+models/*
+!models/.gitkeep
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Env
+.env

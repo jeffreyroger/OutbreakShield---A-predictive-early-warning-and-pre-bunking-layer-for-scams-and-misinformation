@@ -1,0 +1,15 @@
+embedding:
+  model_name: "<local multilingual model>"  # select on Indic coverage, not English benchmark score
+  dim: 768
+
+clustering:
+  thresh_member: 0.82        # >= this -> join existing lineage
+  thresh_mutation: 0.68      # >= this but < member -> child lineage
+  # < thresh_mutation -> new root lineage
+
+rt:
+  window_days: 7
+  serial_interval_mean: 2.5  # ASSUMED — see SRS Open Issue 1
+  serial_interval_sd: 1.5    # ASSUMED
+  credible_interval: 0.95
+  min_reports: 10

@@ -1,0 +1,17 @@
+technique: authority_impersonation
+language: en
+title: "Watch out for callers pretending to be an authority figure"
+technique_layer: >
+  Scammers often pretend to be a police officer, bank official, courier company,
+  or government agent. They create fear or urgency so you act before you have
+  time to think or check with anyone. This is a manipulation pattern used across
+  many different scams, not just one specific message — recognising the pattern
+  is what protects you, even from a version of this you haven't seen yet.
+variant_layer_template: >
+  Recent reports from the {region_generic} area describe callers using this
+  technique in ways connected to: {variant_signal}. Callers may reference real
+  personal details to sound convincing — this alone does not make them genuine.
+action_steps:
+  - "Hang up and call the organisation back using a number you find yourself, not one the caller gives you."
+  - "No genuine official will ever ask you to move money to keep it 'safe'."
+  - "Take your time. Urgency is the tactic, not a reason to act."

@@ -1,0 +1,15 @@
+technique: refund_inversion
+language: en
+title: "A 'refund' call that asks you to pay is not a refund"
+technique_layer: >
+  In this pattern, someone claims you are owed a refund, cashback, or accidental
+  payment — then says you must first pay a fee, share a code, or approve a
+  request to receive it. A genuine refund never requires you to send money,
+  approve a payment request, or share a one-time code first.
+variant_layer_template: >
+  Reports from the {region_generic} area describe this pattern connected to:
+  {variant_signal}. The request may look official and mention a real service name.
+action_steps:
+  - "A real refund never asks you to pay, approve a request, or share an OTP first."
+  - "Do not approve any payment app request you did not initiate yourself."
+  - "Check refund status only through the official app or website, not a link someone sends you."

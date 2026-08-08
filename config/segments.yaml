@@ -1,0 +1,23 @@
+# Segment = f"{region_tier}:{language}"
+# Reporting-propensity weights (w_s) applied before Rt estimation.
+# Default 1.0 everywhere — uniform-and-state-the-limitation (SRS Open Issue 2, option a)
+# until survey-derived weights are cited (option b).
+
+region_tiers:
+  - metro
+  - tier2
+  - tier3
+  - rural
+  - unknown
+
+languages:
+  - hi
+  - en
+  - ta   # added for Phase 1 corpus language-coverage requirement (SRS Step 1.1)
+  - unknown
+
+default_weight: 1.0
+
+weights: {}
+# Example override:
+# "rural:hi": 1.4

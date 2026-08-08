@@ -1,0 +1,11 @@
+replay:
+  compression_ratio: 64800   # 3 months -> 2 minutes
+
+auto_publish: true
+
+rate_limit:
+  max_posts_per_segment_per_sim_week: 2
+
+generation:
+  max_retries: 2
+  timeout_seconds: 30
