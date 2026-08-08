@@ -1,5 +1,8 @@
 # OutbreakShield — Prompt Engineering Transcript (PROMPTS.md)
 
+**Live Deployed App:** http://outbreakshield.surge.sh
+**GitHub Repository:** https://github.com/jeffreyroger/OutbreakShield---A-predictive-early-warning-and-pre-bunking-layer-for-scams-and-misinformation
+
 This file contains key prompts and architectural instructions used to build OutbreakShield under local-only constraints. It serves as evidence of systematic engineering and "vibe-coding" discipline.
 
 ---

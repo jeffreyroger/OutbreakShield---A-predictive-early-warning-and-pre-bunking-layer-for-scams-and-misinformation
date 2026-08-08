@@ -1,10 +1,11 @@
 # OutbreakShield
 
+**Live Deployed App:** http://outbreakshield.surge.sh
+
 Predictive early-warning and pre-bunking layer for scams and misinformation.
 Fully local: no hosted model APIs, no external services at runtime. See
 [SUMMARY.md](SUMMARY.md) for the pitch, [SRS.md](SRS.md) for requirements,
-and [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the build sequence
-this scaffold follows (Phase 0).
+and [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the build sequence.
 
 ## Layout
 
