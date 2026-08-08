@@ -38,3 +38,9 @@ def test_rejects_too_short():
     post = {"title": "Hi", "technique_layer": "", "variant_layer": "", "action_steps": []}
     ok, reason = validate(post)
     assert not ok and reason == "length_out_of_bounds"
+
+
+def test_rejects_demographic_blocklist():
+    post = {**VALID_POST, "variant_layer": VALID_POST["variant_layer"] + " Scammers are targeting people in Jamtara."}
+    ok, reason = validate(post)
+    assert not ok and reason == "names_blocklisted_demographic:jamtara"

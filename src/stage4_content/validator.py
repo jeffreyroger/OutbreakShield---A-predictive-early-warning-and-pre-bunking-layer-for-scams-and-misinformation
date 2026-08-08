@@ -9,9 +9,18 @@ PAYMENT_IMPERATIVE_RE = re.compile(
     r"\b(transfer|send|pay|share your (otp|pin|password))\b", re.IGNORECASE
 )
 
-# Populate with real terms before publishing (FR-4.7). Kept empty here deliberately —
-# a blocklist is a policy decision, not a scaffolding placeholder.
-DEMOGRAPHIC_BLOCKLIST: list[str] = []
+# Populate with real terms before publishing (FR-4.7).
+DEMOGRAPHIC_BLOCKLIST: list[str] = [
+    # Religions & Castes
+    "hindu", "muslim", "sikh", "christian", "jain", "buddhist", "brahmin", "dalit", "caste", "religion",
+    # Communities / Region-based demographic labels
+    "marwari", "gujarati", "tamilian", "bengali", "punjabi", "kannadiga", "telugite", "malayali",
+    # Hotspot districts/states (Jamtara, Mewat, etc.)
+    "jamtara", "mewat", "nuh", "deoghar", "bharatpur", "mathura", "alwar", "jharkhand", "haryana", "rajasthan", "bihar",
+    # Specific demographic groups
+    "senior citizen", "elderly", "elders", "pensioner", "student", "youth", "women", "housewife", "housewives",
+    "rural folk", "urban user", "village", "villagers", "tribal"
+]
 
 MIN_LENGTH = 40
 MAX_LENGTH = 2000

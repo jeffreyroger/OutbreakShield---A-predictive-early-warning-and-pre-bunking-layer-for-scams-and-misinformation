@@ -1,11 +1,21 @@
 embedding:
-  model_name: "<local multilingual model>"  # select on Indic coverage, not English benchmark score
-  dim: 768
+  model_name: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"  # select on Indic coverage, not English benchmark score
+  dim: 384
 
 clustering:
-  thresh_member: 0.82        # >= this -> join existing lineage
-  thresh_mutation: 0.68      # >= this but < member -> child lineage
-  # < thresh_mutation -> new root lineage
+  thresh_member: 0.82        # default >= this -> join existing lineage
+  thresh_mutation: 0.68      # default >= this but < member -> child lineage
+  # Per-language overrides tuned from scripts/tune_thresholds.py
+  by_language:
+    en:
+      thresh_member: 0.70
+      thresh_mutation: 0.52
+    hi:
+      thresh_member: 0.68
+      thresh_mutation: 0.50
+    ta:
+      thresh_member: 0.94
+      thresh_mutation: 0.90
 
 rt:
   window_days: 7

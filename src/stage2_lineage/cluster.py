@@ -25,8 +25,16 @@ def assign_report(report: dict, embedding: np.ndarray) -> dict:
     {"decision": "member"|"mutation"|"new_root", "target_id": str|None, "similarity": float}
     """
     cfg = load_config()["model"]["clustering"]
-    thresh_member = cfg["thresh_member"]
-    thresh_mutation = cfg["thresh_mutation"]
+    lang = report.get("language")
+    
+    # Check for per-language overrides (DR-4)
+    by_lang = cfg.get("by_language", {})
+    if lang in by_lang:
+        thresh_member = by_lang[lang]["thresh_member"]
+        thresh_mutation = by_lang[lang]["thresh_mutation"]
+    else:
+        thresh_member = cfg["thresh_member"]
+        thresh_mutation = cfg["thresh_mutation"]
 
     centroids = repo.get_all_centroids()
     if not centroids:

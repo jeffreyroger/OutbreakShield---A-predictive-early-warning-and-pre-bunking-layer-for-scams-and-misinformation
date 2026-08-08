@@ -27,11 +27,17 @@ TICK_INTERVAL_SECONDS = 1.0
 class PublisherLoop:
     def __init__(self):
         self._thread: threading.Thread | None = None
+        self._gen_worker: threading.Thread | None = None
         self._stop_event = threading.Event()
         self._lock = threading.Lock()
         self._auto_publish = True
         self._tick_count = 0
         self._last_error: str | None = None
+        
+        # Async generation queue (NFR-1.4)
+        import queue
+        self._gen_queue = queue.Queue()
+        self._currently_queued_tasks = set()
 
     @property
     def running(self) -> bool:
@@ -53,8 +59,15 @@ class PublisherLoop:
 
             self._stop_event.clear()
             get_clock().start()
+            
+            # Start publisher loop thread
             self._thread = threading.Thread(target=self._run, daemon=True, name="publisher-loop")
             self._thread.start()
+            
+            # Start generation worker thread (NFR-1.4)
+            self._gen_worker = threading.Thread(target=self._run_gen_worker, daemon=True, name="publisher-gen-worker")
+            self._gen_worker.start()
+            
             return {"started": True, "already_running": False}
 
     def stop(self) -> None:
@@ -96,6 +109,34 @@ class PublisherLoop:
             self._publish_or_queue(variant_id, target_segment, lineage, simulated_now)
 
     def _publish_or_queue(
+        self, variant_id: str, target_segment: str, lineage_rank_row: dict, simulated_now: datetime,
+    ) -> None:
+        task_key = f"{variant_id}:{target_segment}"
+        with self._lock:
+            if task_key in self._currently_queued_tasks:
+                return
+            self._currently_queued_tasks.add(task_key)
+        self._gen_queue.put((variant_id, target_segment, lineage_rank_row, simulated_now))
+
+    def _run_gen_worker(self) -> None:
+        import queue
+        while not self._stop_event.is_set():
+            try:
+                task = self._gen_queue.get(timeout=1.0)
+            except queue.Empty:
+                continue
+
+            variant_id, target_segment, lineage_rank_row, simulated_now = task
+            try:
+                self._publish_or_queue_sync(variant_id, target_segment, lineage_rank_row, simulated_now)
+            except Exception as e:
+                self._last_error = f"Gen worker error: {e}"
+            finally:
+                with self._lock:
+                    self._currently_queued_tasks.discard(f"{variant_id}:{target_segment}")
+                self._gen_queue.task_done()
+
+    def _publish_or_queue_sync(
         self, variant_id: str, target_segment: str, lineage_rank_row: dict, simulated_now: datetime,
     ) -> None:
         with trace("stage5_publisher", f"generate:{variant_id}:{target_segment}") as rec:

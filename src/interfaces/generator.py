@@ -29,13 +29,31 @@ class StubGenerator(Generator):
 class LocalGenerator(Generator):
     """Real local instruction-tuned model served via Ollama/llama.cpp, 127.0.0.1 only.
 
-    Not yet implemented — wire up in Phase 5, Step 5.2.
+    Sends generation requests locally to Ollama's API (IF-2, CON-1).
     """
 
     def __init__(self, model_name: str, base_url: str = "http://127.0.0.1:11434"):
-        raise NotImplementedError(
-            "LocalGenerator not yet implemented. Use MODEL_MODE=stub for now."
-        )
+        self.model_name = model_name
+        self.base_url = base_url
 
     def generate(self, prompt: str, max_tokens: int = 512, temperature: float = 0.7) -> str:
-        raise NotImplementedError
+        import httpx
+        try:
+            resp = httpx.post(
+                f"{self.base_url}/api/generate",
+                json={
+                    "model": self.model_name,
+                    "prompt": prompt,
+                    "stream": False,
+                    "format": "json",
+                    "options": {
+                        "num_predict": max_tokens,
+                        "temperature": temperature
+                    }
+                },
+                timeout=30.0
+            )
+            resp.raise_for_status()
+            return resp.json()["response"]
+        except Exception as e:
+            raise RuntimeError(f"Local Ollama generation failed: {e}") from e

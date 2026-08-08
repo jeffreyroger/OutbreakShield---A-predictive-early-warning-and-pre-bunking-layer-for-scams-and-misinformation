@@ -21,5 +21,7 @@ def get_generator() -> Generator:
     if mode == "stub":
         return StubGenerator()
     if mode == "real":
-        return LocalGenerator(model_name="<local instruction-tuned model>")
+        from src.config import load_config
+        cfg = load_config()["runtime"]["generation"]
+        return LocalGenerator(model_name=cfg["model_name"], base_url=cfg.get("base_url", "http://127.0.0.1:11434"))
     raise ValueError(f"Unknown MODEL_MODE: {mode!r} (expected 'stub' or 'real')")

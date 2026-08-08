@@ -54,6 +54,17 @@ class ReplayClock:
             self._sim_start = (
                 _parse_iso(self._reports[0]["timestamp"]) if self._reports else None
             )
+            # Reload persisted state if it exists (FR-5.5, NFR-2.2)
+            try:
+                from src.db import repository as r_repo
+                elapsed_str = r_repo.get_state("clock_elapsed_seconds")
+                cursor_str = r_repo.get_state("clock_cursor")
+                if elapsed_str is not None:
+                    self._sim_elapsed_seconds = float(elapsed_str)
+                if cursor_str is not None:
+                    self._cursor = int(cursor_str)
+            except Exception:
+                pass
             self._real_checkpoint = time.monotonic()
 
     def start(self) -> None:
@@ -61,16 +72,31 @@ class ReplayClock:
         with self._lock:
             self._real_checkpoint = time.monotonic()
             self._paused = False
+            try:
+                from src.db import repository as r_repo
+                r_repo.set_state("clock_paused", "false")
+            except Exception:
+                pass
 
     def pause(self) -> None:
         with self._lock:
             self._checkpoint_locked()
             self._paused = True
+            try:
+                from src.db import repository as r_repo
+                r_repo.set_state("clock_paused", "true")
+            except Exception:
+                pass
 
     def resume(self) -> None:
         with self._lock:
             self._real_checkpoint = time.monotonic()
             self._paused = False
+            try:
+                from src.db import repository as r_repo
+                r_repo.set_state("clock_paused", "false")
+            except Exception:
+                pass
 
     def seek(self, target: datetime) -> None:
         self._ensure_loaded()
@@ -86,12 +112,23 @@ class ReplayClock:
                     self._cursor = i + 1
                 else:
                     break
+            try:
+                from src.db import repository as r_repo
+                r_repo.set_state("clock_elapsed_seconds", str(self._sim_elapsed_seconds))
+                r_repo.set_state("clock_cursor", str(self._cursor))
+            except Exception:
+                pass
 
     def _checkpoint_locked(self) -> None:
         if not self._paused:
             elapsed_real = time.monotonic() - self._real_checkpoint
             self._sim_elapsed_seconds += elapsed_real * self._compression_ratio
             self._real_checkpoint = time.monotonic()
+            try:
+                from src.db import repository as r_repo
+                r_repo.set_state("clock_elapsed_seconds", str(self._sim_elapsed_seconds))
+            except Exception:
+                pass
 
     def simulated_now(self) -> datetime | None:
         self._ensure_loaded()
@@ -109,11 +146,18 @@ class ReplayClock:
             if now is None or self._reports is None:
                 return []
             due = []
+            orig_cursor = self._cursor
             while self._cursor < len(self._reports) and _parse_iso(
                 self._reports[self._cursor]["timestamp"]
             ) <= now:
                 due.append(self._reports[self._cursor])
                 self._cursor += 1
+            if self._cursor != orig_cursor:
+                try:
+                    from src.db import repository as r_repo
+                    r_repo.set_state("clock_cursor", str(self._cursor))
+                except Exception:
+                    pass
             return due
 
     def is_finished(self) -> bool:
@@ -140,6 +184,12 @@ class ReplayClock:
             self._reports = None
             self._cursor = 0
             self._sim_elapsed_seconds = 0.0
+            try:
+                from src.db import repository as r_repo
+                r_repo.set_state("clock_elapsed_seconds", "0.0")
+                r_repo.set_state("clock_cursor", "0")
+            except Exception:
+                pass
 
 
 _clock: ReplayClock | None = None

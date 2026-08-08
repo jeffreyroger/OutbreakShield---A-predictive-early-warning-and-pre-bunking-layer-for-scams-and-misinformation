@@ -7,5 +7,7 @@ rate_limit:
   max_posts_per_segment_per_sim_week: 2
 
 generation:
+  model_name: "llama3"
+  base_url: "http://127.0.0.1:11434"
   max_retries: 2
   timeout_seconds: 30
